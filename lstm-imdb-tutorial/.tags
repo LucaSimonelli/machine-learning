@@ -1,0 +1,100 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+OrderedDict	lstm.py	/^from collections import OrderedDict$/;"	i
+RandomStreams	lstm.py	/^from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams$/;"	i
+SEED	lstm.py	/^SEED = 123$/;"	v
+_p	lstm.py	/^def _p(pp, name):$/;"	f
+_slice	lstm.py	/^    def _slice(_x, n, dim):$/;"	f	function:lstm_layer
+_step	lstm.py	/^    def _step(m_, x_, h_, c_):$/;"	f	function:lstm_layer
+adadelta	lstm.py	/^def adadelta(lr, tparams, grads, x, mask, y, cost):$/;"	f
+bad_count	lstm.py	/^    bad_count = 0$/;"	v
+bad_counter	lstm.py	/^                        bad_counter = 0$/;"	v
+best_p	lstm.py	/^                        best_p = unzip(tparams)$/;"	v
+best_p	lstm.py	/^        best_p = unzip(tparams)$/;"	v
+best_p	lstm.py	/^    best_p = None$/;"	v
+build_model	lstm.py	/^def build_model(tparams, options):$/;"	f
+cPickle	imdb.py	/^import cPickle$/;"	i
+config	lstm.py	/^from theano import config$/;"	i
+cost	lstm.py	/^                cost = f_grad_shared(x, mask, y)$/;"	v
+datasets	lstm.py	/^datasets = {'imdb': (imdb.load_data, imdb.prepare_data)}$/;"	v
+decay_c	lstm.py	/^        decay_c = theano.shared(numpy_floatX(decay_c), name='decay_c')$/;"	v
+dropout_layer	lstm.py	/^def dropout_layer(state_before, use_noise, trng):$/;"	f
+end_time	lstm.py	/^    end_time = time.time()$/;"	v
+estop	lstm.py	/^                            estop = True$/;"	v
+estop	lstm.py	/^    estop = False  # early stop$/;"	v
+f_cost	lstm.py	/^    f_cost = theano.function([x, mask, y], cost, name='f_cost')$/;"	v
+f_grad	lstm.py	/^    f_grad = theano.function([x, mask, y], grads, name='f_grad')$/;"	v
+get_dataset	lstm.py	/^def get_dataset(name):$/;"	f
+get_dataset_file	imdb.py	/^def get_dataset_file(dataset, default_dataset, origin):$/;"	f
+get_layer	lstm.py	/^def get_layer(name):$/;"	f
+get_minibatches_idx	lstm.py	/^def get_minibatches_idx(n, minibatch_size, shuffle=False):$/;"	f
+grads	lstm.py	/^    grads = tensor.grad(cost, wrt=tparams.values())$/;"	v
+gzip	imdb.py	/^import gzip$/;"	i
+history_errs	lstm.py	/^                    history_errs=history_errs, **best_p)$/;"	v
+history_errs	lstm.py	/^    history_errs = []$/;"	v
+idx	lstm.py	/^        idx = idx[:test_size]$/;"	v
+idx	lstm.py	/^        idx = numpy.arange(len(test[0]))$/;"	v
+imdb	lstm.py	/^import imdb$/;"	i
+init_params	lstm.py	/^def init_params(options):$/;"	f
+init_tparams	lstm.py	/^def init_tparams(params):$/;"	f
+kf	lstm.py	/^            kf = get_minibatches_idx(len(train[0]), batch_size, shuffle=True)$/;"	v
+kf_test	lstm.py	/^    kf_test = get_minibatches_idx(len(test[0]), valid_batch_size)$/;"	v
+kf_train_sorted	lstm.py	/^    kf_train_sorted = get_minibatches_idx(len(train[0]), batch_size)$/;"	v
+kf_valid	lstm.py	/^    kf_valid = get_minibatches_idx(len(valid[0]), valid_batch_size)$/;"	v
+layers	lstm.py	/^layers = {'lstm': (param_init_lstm, lstm_layer)}$/;"	v
+len_argsort	imdb.py	/^    def len_argsort(seq):$/;"	f	function:load_data
+load_data	imdb.py	/^def load_data(path="imdb.pkl", n_words=100000, valid_portion=0.1, maxlen=None,$/;"	f
+load_params	lstm.py	/^def load_params(path, params):$/;"	f
+lr	lstm.py	/^    lr = tensor.scalar(name='lr')$/;"	v
+lstm_layer	lstm.py	/^def lstm_layer(tparams, state_below, options, prefix='lstm', mask=None):$/;"	f
+max_epochs	lstm.py	/^        max_epochs=100,$/;"	v
+maxlen	lstm.py	/^                                   maxlen=maxlen)$/;"	v
+model_options	lstm.py	/^    model_options = locals().copy()$/;"	v
+n_samples	lstm.py	/^            n_samples = 0$/;"	v
+numpy	imdb.py	/^import numpy$/;"	i
+numpy	lstm.py	/^import numpy$/;"	i
+numpy_floatX	lstm.py	/^def numpy_floatX(data):$/;"	f
+ortho_weight	lstm.py	/^def ortho_weight(ndim):$/;"	f
+os	imdb.py	/^import os$/;"	i
+param_init_lstm	lstm.py	/^def param_init_lstm(options, params, prefix='lstm'):$/;"	f
+params	lstm.py	/^                        params = best_p$/;"	v
+params	lstm.py	/^                        params = unzip(tparams)$/;"	v
+params	lstm.py	/^    params = init_params(model_options)$/;"	v
+pkl	lstm.py	/^import cPickle as pkl$/;"	i
+pred_error	lstm.py	/^def pred_error(f_pred, prepare_data, data, iterator, verbose=False):$/;"	f
+pred_probs	lstm.py	/^def pred_probs(f_pred_prob, prepare_data, data, iterator, verbose=False):$/;"	f
+prepare_data	imdb.py	/^def prepare_data(seqs, labels, maxlen=None):$/;"	f
+remove_unk	imdb.py	/^    def remove_unk(x):$/;"	f	function:load_data
+rmsprop	lstm.py	/^def rmsprop(lr, tparams, grads, x, mask, y, cost):$/;"	f
+saveFreq	lstm.py	/^        saveFreq = len(train[0]) \/ batch_size$/;"	v
+sgd	lstm.py	/^def sgd(lr, tparams, grads, x, mask, y, cost):$/;"	f
+start_time	lstm.py	/^    start_time = time.time()$/;"	v
+sys	lstm.py	/^import sys$/;"	i
+tensor	lstm.py	/^import theano.tensor as tensor$/;"	i
+test	lstm.py	/^        test = ([test[0][n] for n in idx], [test[1][n] for n in idx])$/;"	v
+test_err	lstm.py	/^                    test_err = pred_error(f_pred, prepare_data, test, kf_test)$/;"	v
+test_err	lstm.py	/^    test_err = pred_error(f_pred, prepare_data, test, kf_test)$/;"	v
+test_size	lstm.py	/^        test_size=500,$/;"	v
+theano	imdb.py	/^import theano$/;"	i
+theano	lstm.py	/^import theano$/;"	i
+theano	lstm.py	/^import theano.tensor as tensor$/;"	i
+time	lstm.py	/^import time$/;"	i
+tparams	lstm.py	/^    tparams = init_tparams(params)$/;"	v
+train_err	lstm.py	/^                    train_err = pred_error(f_pred, prepare_data, train, kf)$/;"	v
+train_err	lstm.py	/^    train_err = pred_error(f_pred, prepare_data, train, kf_train_sorted)$/;"	v
+train_lstm	lstm.py	/^def train_lstm($/;"	f
+uidx	lstm.py	/^    uidx = 0  # the number of update done$/;"	v
+unzip	lstm.py	/^def unzip(zipped):$/;"	f
+urllib	imdb.py	/^        import urllib$/;"	i
+validFreq	lstm.py	/^        validFreq = len(train[0]) \/ batch_size$/;"	v
+valid_err	lstm.py	/^                    valid_err = pred_error(f_pred, prepare_data, valid,$/;"	v
+valid_err	lstm.py	/^    valid_err = pred_error(f_pred, prepare_data, valid, kf_valid)$/;"	v
+weight_decay	lstm.py	/^        weight_decay = 0.$/;"	v
+x	lstm.py	/^                x = [train[0][t] for t in train_index]$/;"	v
+y	lstm.py	/^                y = [train[1][t] for t in train_index]$/;"	v
+ydim	lstm.py	/^    ydim = numpy.max(train[1]) + 1$/;"	v
+zipp	lstm.py	/^def zipp(params, tparams):$/;"	f
