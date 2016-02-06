@@ -1,0 +1,5 @@
+Add config file for matplotlib
+https://stackoverflow.com/questions/21784641/installation-issue-with-matplotlib-python
+
+To use tkinter install python py27-tkinter from macport
+https://stackoverflow.com/questions/15057166/import-tkinter-fails-with-python-2-7-3-mac-osx-10-8-2

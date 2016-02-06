@@ -1,3 +1,5 @@
 .DS_Store
 *.pyc
 *.swp
+udacity_deep_learning/data
+udacity_deep_learning/tensorflow
