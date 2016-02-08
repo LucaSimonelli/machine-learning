@@ -121,6 +121,8 @@ def load_data(pickle_file,
     data = pickle.load(file_obj)
     file_obj.close()
     data['train_dataset'], data['train_labels'] = randomize(data['train_dataset'], data['train_labels'])
+    data['valid_dataset'], data['valid_labels'] = randomize(data['valid_dataset'], data['valid_labels'])
+    data['test_dataset'], data['test_labels'] = randomize(data['test_dataset'], data['test_labels'])
 
     train_dataset = data['train_dataset'][:max_train_samples, :, :]
     train_labels = data['train_labels'][:max_train_samples]
@@ -179,25 +181,34 @@ class NotMNIST(object):
         self.valid_labels = one_hot_labels(self.valid_labels)
         self.test_labels = one_hot_labels(self.test_labels)
 
-    def verify_data_is_balanced(self):
+    @classmethod
+    def _verify_data_is_balanced(cls, labels):
         """ """
-        sorted_train_labels = sorted(self.train_labels)
+        sorted_labels = sorted(labels)
         labels_count = {}
 
-        for label in sorted_train_labels:
+        for label in sorted_labels:
             if label not in labels_count:
                 labels_count[label] = 1
             else:
                 labels_count[label] += 1
         print "Verify that data is balanced across classes: %s" % (labels_count, )
 
+    def verify_data_is_balanced(self):
+        """ """
+        self._verify_data_is_balanced(self.train_labels)
+        self._verify_data_is_balanced(self.valid_labels)
+        self._verify_data_is_balanced(self.test_labels)
+
     def show_random_sample(self):
         """ """
+        mapIdxToChar = { 0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E',
+                         5: 'F', 6: 'G', 7: 'H', 8: 'I', 9: 'J'}
         import matplotlib.pyplot as plt
         train_dataset_size = self.train_dataset.shape[0]
         random_index = random.choice(range(0, train_dataset_size))
-        random_index = 0
         image_obj = plt.imshow(self.train_dataset[random_index, :, :])
+        print "%s" % mapIdxToChar[self.train_labels[random_index]]
         plt.show()
 
     def __generate_pickle_file(self):
@@ -238,6 +249,7 @@ if  __name__ == "__main__":
                      max_train_samples=5000,
                      max_valid_samples=500,
                      max_test_samples=500)
-    mnist.show_random_sample()
+    for i in xrange(20):
+        mnist.show_random_sample()
     sys.exit(0)
 
