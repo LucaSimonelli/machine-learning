@@ -3,8 +3,6 @@ import os
 import sys
 import tarfile
 import urllib
-#from IPython.display import display_png, Image
-from PIL import Image
 from scipy import ndimage
 #from sklearn.linear_model import LogisticRegression
 import cPickle as pickle
@@ -23,13 +21,14 @@ np.random.seed()
 
 def maybe_download(url, filename, dst_dir):
     """Download a file if not present, and make sure it's the right size."""
+    retFilename = dst_dir+filename
     if not os.path.exists(dst_dir):
         os.makedirs(dst_dir)
     if not os.path.exists(dst_dir+filename):
-        filename, _ = urllib.urlretrieve(url + filename, dst_dir + filename)
-        statinfo = os.stat(filename)
-        print "Data downloaded: filename=%s, size=%d" % (filename, statinfo.st_size)
-    return dst_dir+filename
+        retFilename, _ = urllib.urlretrieve(url + filename, dst_dir + filename)
+        statinfo = os.stat(retFilename)
+        print "Data downloaded: filename=%s, size=%d" % (retFilename, statinfo.st_size)
+    return retFilename
 
 
 def maybe_extract(filename, dst_dir):
@@ -46,6 +45,8 @@ def maybe_extract(filename, dst_dir):
 
 def display_random_image(folders):
     """ pic a random image in the data_set_path and display it"""
+    #from IPython.display import display_png, Image
+    from PIL import Image
     folder = random.choice(folders)
     filename = random.choice(os.listdir(folder))
     image_file_path = os.path.join(folder, filename)
@@ -218,7 +219,7 @@ class NotMNIST(object):
         train_folders = maybe_extract(train_filename, DATA_DIR)
         test_folders = maybe_extract(test_filename, DATA_DIR)
         print test_folders
-        display_random_image(test_folders)
+        #display_random_image(test_folders)
         train_dataset, train_labels = load(data_folders=train_folders,
                                    image_size=28, pixel_depth=255.0,
                                    min_num_images=450000, max_num_images=550000)
