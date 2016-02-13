@@ -6,7 +6,7 @@ from six.moves import range
 from process_data import (NotMNIST,
                           DATA_DIR, DATA_PICKLE_FILE, DATA_IMAGE_SIZE, DATA_NUM_LABELS)
 
-MNIST = NotMNIST(pickle_file = os.path.join(DATA_DIR, DATA_PICKLE_FILE),
+MNIST = NotMNIST(pickle_file=os.path.join(DATA_DIR, DATA_PICKLE_FILE),
                  max_train_samples=5000,
                  max_valid_samples=500,
                  max_test_samples=500)

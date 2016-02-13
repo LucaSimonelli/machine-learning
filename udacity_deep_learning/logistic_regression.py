@@ -1,19 +1,24 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn import linear_model, datasets
-import cPickle as pickle
-from process_data import randomize, load_data
-import sys
+from sklearn import linear_model
+import os
+from process_data import (NotMNIST,
+                          DATA_DIR, DATA_PICKLE_FILE, DATA_IMAGE_SIZE,
+                          DATA_NUM_LABELS)
 
-pickle_file = "./data/notMNIST.pickle"
-(X, Y, _, _, Zx, Zy) = load_data(pickle_file=pickle_file,
-                                 max_train_samples=5000,
-                                 max_valid_samples=0,
-                                 max_test_samples=500,
-                                 one_hot_labels=False)
+
+MNIST = NotMNIST(pickle_file=os.path.join(DATA_DIR, DATA_PICKLE_FILE),
+                 max_train_samples=50000,
+                 max_valid_samples=0,
+                 max_test_samples=5000)
+
+MNIST.verify_data_is_balanced()
+MNIST.reshape_dataset()
+
+X = MNIST.train_dataset
+Y = MNIST.train_labels
+Zx = MNIST.test_dataset
+Zy = MNIST.test_labels
 print X.shape
 print Y.shape
-#sys.exit(0)
 logreg = linear_model.LogisticRegression(C=1e5)
 
 # we create an instance of Neighbours Classifier and fit the data.

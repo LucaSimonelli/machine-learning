@@ -24,8 +24,7 @@ MNIST.one_hot_labels()
 # Subset the training data for faster turnaround.
 #train_subset = 10000
 
-LEARNING_RATE = 0.000001
-#LEARNING_RATE = 0.0001
+LEARNING_RATE = 0.0001
 batch_size = np.amin([128, MNIST.train_dataset.shape[0]])
 num_steps = 200001
 graph = tf.Graph()
