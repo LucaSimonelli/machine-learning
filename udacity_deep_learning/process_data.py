@@ -1,3 +1,4 @@
+""" Doc """
 import numpy as np
 import os
 import sys
@@ -21,14 +22,15 @@ np.random.seed()
 
 def maybe_download(url, filename, dst_dir):
     """Download a file if not present, and make sure it's the right size."""
-    retFilename = dst_dir+filename
+    ret_filename = dst_dir+filename
     if not os.path.exists(dst_dir):
         os.makedirs(dst_dir)
     if not os.path.exists(dst_dir+filename):
-        retFilename, _ = urllib.urlretrieve(url + filename, dst_dir + filename)
-        statinfo = os.stat(retFilename)
-        print "Data downloaded: filename=%s, size=%d" % (retFilename, statinfo.st_size)
-    return retFilename
+        ret_filename, _ = urllib.urlretrieve(url + filename, dst_dir + filename)
+        statinfo = os.stat(ret_filename)
+        print "Data downloaded: filename=%s, size=%d" % (
+            ret_filename, statinfo.st_size)
+    return ret_filename
 
 
 def maybe_extract(filename, dst_dir):
@@ -38,7 +40,9 @@ def maybe_extract(filename, dst_dir):
         tar = tarfile.open(filename)
         tar.extractall(path=dst_dir)
         tar.close()
-    data_folders = [os.path.join(root, d) for d in sorted(os.listdir(root)) if os.path.isdir(os.path.join(root, d))]
+    data_folders = [os.path.join(root, directory)
+                    for directory in sorted(os.listdir(root))
+                    if os.path.isdir(os.path.join(root, directory))]
     print data_folders
     return data_folders
 
@@ -55,7 +59,9 @@ def display_random_image(folders):
     image.show()
 
 
-def load(data_folders, image_size, pixel_depth, min_num_images, max_num_images):
+def load(data_folders, image_size, pixel_depth,
+         min_num_images, max_num_images):
+    """ Doc """
     dataset = np.ndarray(
         shape=(max_num_images, image_size, image_size), dtype=np.float32)
     labels = np.ndarray(shape=(max_num_images), dtype=np.int32)
@@ -66,7 +72,7 @@ def load(data_folders, image_size, pixel_depth, min_num_images, max_num_images):
         for image in os.listdir(folder):
             if image_index >= max_num_images:
                 raise Exception('More images than expected: %d >= %d' % (
-                                image_index, max_num_images))
+                    image_index, max_num_images))
             image_file = os.path.join(folder, image)
             try:
                 image_data = (ndimage.imread(image_file).astype(float) -
@@ -84,7 +90,7 @@ def load(data_folders, image_size, pixel_depth, min_num_images, max_num_images):
     labels = labels[0:num_images]
     if num_images < min_num_images:
         raise Exception('Many fewer images than expected: %d < %d' % (
-                        num_images, min_num_images))
+            num_images, min_num_images))
     print 'Full dataset tensor:', dataset.shape
     print 'Mean:', np.mean(dataset)
     print 'Standard deviation:', np.std(dataset)
@@ -93,37 +99,46 @@ def load(data_folders, image_size, pixel_depth, min_num_images, max_num_images):
 
 
 def randomize(dataset, labels):
+    """ Doc """
     permutation = np.random.permutation(labels.shape[0])
     shuffled_dataset = dataset[permutation, :, :]
     shuffled_labels = labels[permutation]
     return shuffled_dataset, shuffled_labels
 
 
-def save_data(filename, train_dataset, train_labels, valid_dataset, valid_labels, test_dataset, test_labels):
+def save_data(filename,
+              train_dataset, train_labels,
+              valid_dataset, valid_labels,
+              test_dataset, test_labels):
+    """ Doc """
     try:
-      file_obj = open(filename, 'wb')
-      save = {
-        'train_dataset': train_dataset,
-        'train_labels': train_labels,
-        'valid_dataset': valid_dataset,
-        'valid_labels': valid_labels,
-        'test_dataset': test_dataset,
-        'test_labels': test_labels,
-      }
-      pickle.dump(save, file_obj, pickle.HIGHEST_PROTOCOL)
-      file_obj.close()
+        file_obj = open(filename, 'wb')
+        save = {
+            'train_dataset': train_dataset,
+            'train_labels': train_labels,
+            'valid_dataset': valid_dataset,
+            'valid_labels': valid_labels,
+            'test_dataset': test_dataset,
+            'test_labels': test_labels,
+        }
+        pickle.dump(save, file_obj, pickle.HIGHEST_PROTOCOL)
+        file_obj.close()
     except Exception as exc:
-      print 'Unable to save data to', filename, ':', str(exc)
-      raise
+        print 'Unable to save data to', filename, ':', str(exc)
+        raise
 
 def load_data(pickle_file,
               max_train_samples, max_test_samples, max_valid_samples):
+    """ Doc """
     file_obj = open(pickle_file, 'rb')
     data = pickle.load(file_obj)
     file_obj.close()
-    data['train_dataset'], data['train_labels'] = randomize(data['train_dataset'], data['train_labels'])
-    data['valid_dataset'], data['valid_labels'] = randomize(data['valid_dataset'], data['valid_labels'])
-    data['test_dataset'], data['test_labels'] = randomize(data['test_dataset'], data['test_labels'])
+    data['train_dataset'], data['train_labels'] = \
+        randomize(data['train_dataset'], data['train_labels'])
+    data['valid_dataset'], data['valid_labels'] = \
+        randomize(data['valid_dataset'], data['valid_labels'])
+    data['test_dataset'], data['test_labels'] = \
+        randomize(data['test_dataset'], data['test_labels'])
 
     train_dataset = data['train_dataset'][:max_train_samples, :, :]
     train_labels = data['train_labels'][:max_train_samples]
@@ -137,19 +152,19 @@ def load_data(pickle_file,
             test_dataset, test_labels)
 
 def reshape_dataset(dataset):
-    """ """
+    """ Doc """
     samples_count, size_x, size_y = dataset.shape
     dataset = dataset.reshape((samples_count, size_x * size_y))
     return dataset
 
 def one_hot_labels(labels):
-    """ """
+    """ Doc """
     labels = (np.arange(DATA_NUM_LABELS) == labels[:, None]).astype(np.float32)
     return labels
 
 
 class NotMNIST(object):
-    """
+    """ Doc
     """
     def __init__(self, pickle_file,
                  max_train_samples,
@@ -163,19 +178,19 @@ class NotMNIST(object):
         (self.train_dataset, self.train_labels,
          self.valid_dataset, self.valid_labels,
          self.test_dataset, self.test_labels) = load_data(
-                                        pickle_file=self.pickle_file,
-                                        max_train_samples=max_train_samples,
-                                        max_test_samples=max_test_samples,
-                                        max_valid_samples=max_valid_samples)
+             pickle_file=self.pickle_file,
+             max_train_samples=max_train_samples,
+             max_test_samples=max_test_samples,
+             max_valid_samples=max_valid_samples)
 
     def reshape_dataset(self):
-        """ """
+        """ Doc """
         self.train_dataset = reshape_dataset(self.train_dataset)
         self.valid_dataset = reshape_dataset(self.valid_dataset)
         self.test_dataset = reshape_dataset(self.test_dataset)
 
     def one_hot_labels(self):
-        """ """
+        """ Doc """
         self.train_labels = one_hot_labels(self.train_labels)
         #print "train_labels shape=%s" % (self.train_labels.shape, )
         #print "train_labels=%s" % (self.train_labels, )
@@ -184,7 +199,7 @@ class NotMNIST(object):
 
     @classmethod
     def _verify_data_is_balanced(cls, labels):
-        """ """
+        """ Doc """
         sorted_labels = sorted(labels)
         labels_count = {}
 
@@ -196,36 +211,42 @@ class NotMNIST(object):
         print "Verify that data is balanced across classes: %s" % (labels_count, )
 
     def verify_data_is_balanced(self):
-        """ """
+        """ Doc """
         self._verify_data_is_balanced(self.train_labels)
         self._verify_data_is_balanced(self.valid_labels)
         self._verify_data_is_balanced(self.test_labels)
 
     def show_random_sample(self):
-        """ """
-        mapIdxToChar = { 0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E',
-                         5: 'F', 6: 'G', 7: 'H', 8: 'I', 9: 'J'}
+        """ Doc """
+        map_idx_to_char = {0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E',
+                           5: 'F', 6: 'G', 7: 'H', 8: 'I', 9: 'J'}
         import matplotlib.pyplot as plt
         train_dataset_size = self.train_dataset.shape[0]
         random_index = random.choice(range(0, train_dataset_size))
-        image_obj = plt.imshow(self.train_dataset[random_index, :, :])
-        print "%s" % mapIdxToChar[self.train_labels[random_index]]
+        plt.imshow(self.train_dataset[random_index, :, :])
+        print "%s" % map_idx_to_char[self.train_labels[random_index]]
         plt.show()
 
     def __generate_pickle_file(self):
-        """ """
-        train_filename = maybe_download(url=DATA_URL, filename='notMNIST_large.tar.gz', dst_dir=DATA_DIR)
-        test_filename = maybe_download(url=DATA_URL, filename='notMNIST_small.tar.gz', dst_dir=DATA_DIR)
+        """ Doc """
+        train_filename = maybe_download(url=DATA_URL,
+                                        filename='notMNIST_large.tar.gz',
+                                        dst_dir=DATA_DIR)
+        test_filename = maybe_download(url=DATA_URL,
+                                       filename='notMNIST_small.tar.gz',
+                                       dst_dir=DATA_DIR)
         train_folders = maybe_extract(train_filename, DATA_DIR)
         test_folders = maybe_extract(test_filename, DATA_DIR)
         print test_folders
         #display_random_image(test_folders)
         train_dataset, train_labels = load(data_folders=train_folders,
-                                   image_size=28, pixel_depth=255.0,
-                                   min_num_images=450000, max_num_images=550000)
+                                           image_size=28, pixel_depth=255.0,
+                                           min_num_images=450000,
+                                           max_num_images=550000)
         test_dataset, test_labels = load(data_folders=test_folders,
-                                 image_size=28, pixel_depth=255.0,
-                                 min_num_images=18000, max_num_images=20000)
+                                         image_size=28, pixel_depth=255.0,
+                                         min_num_images=18000,
+                                         max_num_images=20000)
         train_dataset, train_labels = randomize(train_dataset, train_labels)
 
         train_size = 200000
@@ -238,19 +259,19 @@ class NotMNIST(object):
         print 'Training', train_dataset.shape, train_labels.shape
         print 'Validation', valid_dataset.shape, valid_labels.shape
         save_data(filename=self.pickle_file,
-              train_dataset=train_dataset, train_labels=train_labels,
-              valid_dataset=valid_dataset, valid_labels=valid_labels,
-              test_dataset=test_dataset, test_labels=test_labels)
+                  train_dataset=train_dataset, train_labels=train_labels,
+                  valid_dataset=valid_dataset, valid_labels=valid_labels,
+                  test_dataset=test_dataset, test_labels=test_labels)
 
 
 
 if  __name__ == "__main__":
-    pickle_file = os.path.join(DATA_DIR, DATA_PICKLE_FILE)
-    mnist = NotMNIST(pickle_file=pickle_file,
+    PICKLE_FILE = os.path.join(DATA_DIR, DATA_PICKLE_FILE)
+    MNIST = NotMNIST(pickle_file=PICKLE_FILE,
                      max_train_samples=5000,
                      max_valid_samples=500,
                      max_test_samples=500)
     for i in xrange(20):
-        mnist.show_random_sample()
+        MNIST.show_random_sample()
     sys.exit(0)
 
