@@ -36,6 +36,9 @@ m = T.shape(Y)[0]
 # int64 to float32 and exploit fully the advantages of the gpu.
 m = m.astype(theano.config.floatX)
 
+# We take A3-Y instead of Y-A3 because we multiply by -1. What we want is not
+# just the gradient but the gradient multiplied by -1 as we want to go in the
+# opposite direction to the gradient.
 D3 = A3 - Y
 # rows=number of samples, columns=number of hidden units
 D2 = T.zeros((T.shape(X)[0], T.shape(A2)[1]), dtype=theano.config.floatX)
