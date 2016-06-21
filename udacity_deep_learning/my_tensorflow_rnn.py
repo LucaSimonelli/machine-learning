@@ -19,19 +19,26 @@ y = tf.placeholder(tf.float32, shape=(batch_size, vocab_size))
 with tf.variable_scope("rnn-prediction"):
     # Declare variables
     Wxh = tf.get_variable("weights-xh", (vocab_size, hidden_layer_size),
+                        dtype=tf.float32,
                         initializer=tf.random_normal_initializer())
     Whh = tf.get_variable("weights-hh", (hidden_layer_size, hidden_layer_size),
+                        dtype=tf.float32,
                         initializer=tf.random_normal_initializer())
     Why = tf.get_variable("weights-hy", (hidden_layer_size, vocab_size),
+                        dtype=tf.float32,
                         initializer=tf.random_normal_initializer())
 
     bx = tf.get_variable("bias-x", (1, 1),
+                        dtype=tf.float32,
                         initializer=tf.random_normal_initializer(0.))
     bh = tf.get_variable("bias-h", (1, 1),
+                        dtype=tf.float32,
                         initializer=tf.random_normal_initializer(0.))
     by = tf.get_variable("bias-y", (1, 1),
+                        dtype=tf.float32,
                         initializer=tf.random_normal_initializer(0.))
     h_state = tf.get_variable("hidden-state", (hidden_layer_size, vocab_size),
+                              dtype=tf.float32,
                               initializer=tf.constant_initializer(0.))
     # Define learning graph
     def calc_next_hidden_state(h_prev, single_input_x):
@@ -51,25 +58,36 @@ with tf.variable_scope("rnn-prediction"):
 
     # Define sampling of 200 characters
     def sample_next_character(prev_state, _):
-        return prev_state
+        #print prev_state
+        prev_output_x = prev_state
+    #    return prev_state
     #    prev_output_x = tf.slice(prev_state, (0,0), (1,vocab_size))
     #    prev_h_state = tf.slice(prev_state, (0,vocab_size), (1,hidden_layer_size))
-    #    curr_h_state = tf.nn.sigmoid(tf.matmul(prev_output_x, Wxh) + bx +
+        curr_h_state = tf.nn.sigmoid(tf.matmul(prev_output_x, Wxh) + bx ) #+
     #                                 tf.matmul(prev_h_state, Whh) + bh) # bh ??
-    #    #curr_y_pred = tf.nn.softmax(tf.matmul(curr_h_state, Why) + by)
+        curr_y_pred = tf.nn.softmax(tf.matmul(curr_h_state, Why) + by)
     #    curr_y_pred = tf.matmul(curr_h_state, Why) + by
     #    # TODO: sample character from output, here we don't sample from the distrib
     #    # we only return the most likely
-    #    curr_output_x = tf.one_hot(tf.argmax(curr_y_pred, 0), vocab_size)
+        print tf.argmax(curr_y_pred, 1)
+        curr_output_x = tf.one_hot(tf.argmax(curr_y_pred, 1), vocab_size)
     #    curr_output_x = tf.reshape(curr_output_x, (1,vocab_size))
     #    return tf.concat(1, [curr_output_x, curr_h_state])
+        print curr_output_x
+        tf.pack([curr_output_x, curr_h_state])
+        return curr_output_x
 
     #sample_initializer = tf.get_variable("sample-initializer", (vocab_size, 1))
-    sample_initializer = tf.get_variable("sample-initializer", (1, vocab_size))
+    #sample_initializer = tf.get_variable("sample-initializer", (1, vocab_size))
+    inputs14 = np.array([char_to_ix[ch] for ch in "a"])
+    sample_initializer = np.zeros((1, vocab_size), dtype=np.float32)
+    sample_initializer[np.arange(1), inputs14] = 1
+
+
     samples_operation = tf.scan(sample_next_character,
                                 # reshape as the input expeceted to be 200, 1 ,1
                                 # 200 because we want to sample 200 characters
-                                tf.reshape(tf.zeros((200, 1)), (200, 1, 1)), # batch of 200 unused elements
+                                tf.reshape(tf.zeros((10, 1)), (10, 1, 1)), # batch of 200 unused elements
                                 #initializer=tf.concat(1, [sample_initializer, tf.zeros((1, hidden_layer_size))])) # you might not want the hidden state to be zero
                                 initializer=sample_initializer) # you might not want the hidden state to be zero
 
@@ -110,12 +128,16 @@ with tf.Session() as sess:
             # sample a number of characters from the rnn
             # Select X_batch[0] as seed
             #sample_initializer = tf.convert_to_tensor(X_batch[0])
-            sample_initializer = X_batch[0]
+            #sample_initializer = X_batch[0]
             #samples, _ = sess.run([samples_operation])
-            samples = sess.run([samples_operation])
+            samples1 = sess.run([samples_operation])
             sentence = ""
-            for sample in samples:
-                print sample
-                #idx = tf.argmax(sample, 0)
-                #sentence += ix_to_char[idx-1]
+            for samples2 in samples1:
+                for sample in samples2:
+                    #print sample
+                    idx = tf.argmax(tf.squeeze(sample), 0)
+                    #print ix_to_char[idx.eval()]
+                    #print tf.squeeze(sample)
+                    #print idx.eval()
+                    sentence += ix_to_char[idx.eval()]
             print sentence
