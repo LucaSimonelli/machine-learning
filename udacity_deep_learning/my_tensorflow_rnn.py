@@ -84,11 +84,14 @@ with tf.variable_scope("rnn-prediction"):
                                 initializer=sample_initializer) # you might not want the hidden state to be zero
 
     opt = tf.train.AdamOptimizer()
-    #gvs = opt.compute_gradients(loss)
+    #grads_and_vars = opt.compute_gradients(loss)
+    capped_grads_and_vars = opt.compute_gradients(loss)
     #capped_gvs = [(tf.clip_by_value(grad, -5., 5.), var) for grad, var in gvs]
     #capped_gvs = tf.clip_by_value(gvs, -5., 5.)
-    #opt_operation = opt.apply_gradients(capped_gvs)
-    opt_operation = opt.minimize(loss)
+    #capped_gvs = tf.clip_by_norm(gradvs, 5.)
+    #capped_grads_and_vars = [(tf.clip_by_norm(gv[0], 5.), gv[1]) for gv in grads_and_vars]
+    opt_operation = opt.apply_gradients(capped_grads_and_vars)
+    #opt_operation = opt.minimize(loss)
 
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
