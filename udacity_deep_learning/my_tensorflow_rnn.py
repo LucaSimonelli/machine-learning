@@ -33,9 +33,9 @@ with tf.variable_scope("rnn-prediction"):
     bx = tf.get_variable("bias-x", (1, 1),
                         dtype=tf.float32,
                         initializer=tf.random_normal_initializer(0.))
-    bh = tf.get_variable("bias-h", (1, 1),
-                        dtype=tf.float32,
-                        initializer=tf.random_normal_initializer(0.))
+    #bh = tf.get_variable("bias-h", (1, 1),
+    #                    dtype=tf.float32,
+    #                    initializer=tf.random_normal_initializer(0.))
     by = tf.get_variable("bias-y", (1, 1),
                         dtype=tf.float32,
                         initializer=tf.random_normal_initializer(0.))
@@ -45,7 +45,7 @@ with tf.variable_scope("rnn-prediction"):
     # Define learning graph
     def calc_next_hidden_state(h_prev, single_input_x):
         a1 = tf.matmul([single_input_x], Wxh) + bx
-        b1 = tf.matmul(h_prev, Whh) + bh # bh ??
+        b1 = tf.matmul(h_prev, Whh) # + bh # bh ??
         h_state = tf.nn.sigmoid(a1+b1)
         #h_state = tf.nn.sigmoid(tf.matmul(single_input_x, Wxh) + bx +
         #                        tf.matmul(h_prev, Whh) + bh) # bh ??
@@ -64,7 +64,7 @@ with tf.variable_scope("rnn-prediction"):
         prev_output_x = tf.slice(prev_state, (0,0), (1,vocab_size))
         prev_h_state = tf.slice(prev_state, (0,vocab_size), (1,hidden_layer_size))
         curr_h_state = tf.nn.sigmoid(tf.matmul(prev_output_x, Wxh) + bx +
-                                     tf.matmul(prev_h_state, Whh) + bh) # bh ??
+                                     tf.matmul(prev_h_state, Whh)) # + bh) # bh ??
         curr_y_pred = tf.nn.softmax(tf.matmul(curr_h_state, Why) + by)
         #curr_y_pred = tf.matmul(curr_h_state, Why) + by
         # TODO: sample character from output, here we don't sample from the distrib
@@ -85,8 +85,11 @@ with tf.variable_scope("rnn-prediction"):
 
     opt = tf.train.AdamOptimizer()
     tvars = tf.trainable_variables()
-    #grads = [tf.clip_by_value(grad, -5., 5.) for grad in tf.gradients(loss, tvars)]
-    grads = [grad for grad in tf.gradients(loss, tvars)]
+    # tvar[0:-1] remove the last variable, which is h_state, for which we don't
+    # don't want to calculate gradients, also because it will result to be None
+    # raising an exception in the clipping operation
+    grads = [tf.clip_by_value(grad, -5., 5.) for grad in tf.gradients(loss, tvars[0:-1])]
+    #grads = [grad for grad in tf.gradients(loss, tvars[0:-1])]
     #grads_and_vars = opt.compute_gradients(loss)
     #capped_grads_and_vars = opt.compute_gradients(loss)
     #capped_gvs = [(tf.clip_by_value(grad, -5., 5.), var) for grad, var in gvs]
@@ -128,6 +131,11 @@ with tf.Session() as sess:
 
         _, loss_val = sess.run([opt_operation, loss],
                                feed_dict={X: X_batch, y: y_batch})
+        # this prints the list of tensors for which we calculate the gradients
+        # you'll see Wxh, Whh, Why, bx, by and None. I don't know the None where
+        # is coming from!
+        #print grads
+        #print tvars[0:-1]
         p += 1
         if epoch % 100 == 0:
             # sample a number of characters from the rnn
