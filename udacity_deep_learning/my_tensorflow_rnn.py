@@ -84,14 +84,23 @@ with tf.variable_scope("rnn-prediction"):
                                 initializer=sample_initializer) # you might not want the hidden state to be zero
 
     opt = tf.train.AdamOptimizer()
+    tvars = tf.trainable_variables()
+    #grads = [tf.clip_by_value(grad, -5., 5.) for grad in tf.gradients(loss, tvars)]
+    grads = [grad for grad in tf.gradients(loss, tvars)]
     #grads_and_vars = opt.compute_gradients(loss)
-    capped_grads_and_vars = opt.compute_gradients(loss)
+    #capped_grads_and_vars = opt.compute_gradients(loss)
     #capped_gvs = [(tf.clip_by_value(grad, -5., 5.), var) for grad, var in gvs]
     #capped_gvs = tf.clip_by_value(gvs, -5., 5.)
     #capped_gvs = tf.clip_by_norm(gradvs, 5.)
-    #capped_grads_and_vars = [(tf.clip_by_norm(gv[0], 5.), gv[1]) for gv in grads_and_vars]
-    opt_operation = opt.apply_gradients(capped_grads_and_vars)
+    #capped_grads_and_vars = [(tf.clip_by_value(gv[0], -5., 5.), gv[1]) for gv in grads_and_vars]
+    #opt_operation = opt.apply_gradients(capped_grads_and_vars)
+    opt_operation = opt.apply_gradients(zip(grads, tvars))
     #opt_operation = opt.minimize(loss)
+
+    #tvars = tf.trainable_variables()
+    #grads = [tf.clip_by_value(grad, -2., 2.) for grad in tf.gradients(cross_entropy, tvars)]
+    #optimizer = tf.train.AdamOptimizer(0.01)
+    #train_step = optimizer.apply_gradients(zip(grads, tvars))
 
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
