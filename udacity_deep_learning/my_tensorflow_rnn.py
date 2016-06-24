@@ -144,9 +144,10 @@ with tf.Session() as sess:
             #seed_character[np.arange(1), inputs14] = 1
             #seed_character = tf.squeeze(seed_character).eval()
             seed_character = X_batch[0]
-            np_h_state = tf.squeeze(h_state).eval()
-            #print np_h_state
-            #print seed_character
+            #print(tf.get_default_graph().as_graph_def())
+            # TODO: The following line is causing memory leak
+            #np_h_state = tf.squeeze(h_state).eval()
+            np_h_state = np.squeeze(h_state.eval())
             sample_initializer_val = np.concatenate((seed_character,
                                                    np_h_state))
             samples1 = sess.run([samples_operation],
@@ -154,6 +155,6 @@ with tf.Session() as sess:
             sentence = ""
             for samples2 in samples1:
                 for sample in samples2:
-                    idx = tf.argmax(tf.squeeze(sample), 0)
-                    sentence += ix_to_char[idx.eval()]
+                    idx = np.argmax(np.squeeze(sample), 0)
+                    sentence += ix_to_char[idx]
             print sentence
