@@ -104,8 +104,11 @@ with tf.variable_scope("rnn-prediction"):
     #grads = [tf.clip_by_value(grad, -2., 2.) for grad in tf.gradients(cross_entropy, tvars)]
     #optimizer = tf.train.AdamOptimizer(0.01)
     #train_step = optimizer.apply_gradients(zip(grads, tvars))
+    tf.scalar_summary('loss-summary', tf.reduce_sum(loss))
+    merged = tf.merge_all_summaries()
 
 with tf.Session() as sess:
+    train_writer = tf.train.SummaryWriter('./logs', sess.graph)
     sess.run(tf.initialize_all_variables())
     epoch = 0
     p = 0 # reading position in the input file
@@ -117,7 +120,7 @@ with tf.Session() as sess:
             #loop = False
             h_state = tf.zeros((1, hidden_layer_size)) # reset RNN memory
             p = 0 # go from start of data
-            print "RESET HIDDEN STATE"
+            #print "RESET HIDDEN STATE"
             continue
 
         # Two vectors of integers representing the inputs and the corresponding
@@ -129,8 +132,13 @@ with tf.Session() as sess:
         X_batch[np.arange(batch_size), inputs] = 1
         y_batch[np.arange(batch_size), targets] = 1
 
-        _, loss_val = sess.run([opt_operation, loss],
-                               feed_dict={X: X_batch, y: y_batch})
+        if epoch % 500 == 0:
+            summary, _, loss_val = sess.run([merged, opt_operation, loss],
+                                  feed_dict={X: X_batch, y: y_batch})
+            train_writer.add_summary(summary, epoch)
+        else:
+            _, loss_val = sess.run([opt_operation, loss],
+                                  feed_dict={X: X_batch, y: y_batch})
         # this prints the list of tensors for which we calculate the gradients
         # you'll see Wxh, Whh, Why, bx, by and None. I don't know the None where
         # is coming from!
