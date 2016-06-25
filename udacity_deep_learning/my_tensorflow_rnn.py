@@ -150,11 +150,10 @@ with tf.Session() as sess:
             np_h_state = np.squeeze(h_state.eval())
             sample_initializer_val = np.concatenate((seed_character,
                                                    np_h_state))
-            samples1 = sess.run([samples_operation],
+            samples = sess.run([samples_operation],
                                 feed_dict={sample_initializer: [sample_initializer_val]})
             sentence = ""
-            for samples2 in samples1:
-                for sample in samples2:
-                    idx = np.argmax(np.squeeze(sample), 0)
-                    sentence += ix_to_char[idx]
+            for sample in np.squeeze(samples):
+                idx = np.argmax(np.squeeze(sample), 0)
+                sentence += ix_to_char[idx]
             print sentence
