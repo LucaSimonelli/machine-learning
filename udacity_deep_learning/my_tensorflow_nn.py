@@ -20,7 +20,7 @@ with tf.variable_scope("nn-regression"):
                         initializer=tf.random_normal_initializer())
     W2 = tf.get_variable("weights2", (100, 1),
                         initializer=tf.random_normal_initializer())
-    b = tf.get_variable("bias", (1, 1),
+    b = tf.get_variable("bias", (1, 100),
                         initializer=tf.random_normal_initializer(0.))
     b2 = tf.get_variable("bias2", (1, 1),
                         initializer=tf.random_normal_initializer(0.))
